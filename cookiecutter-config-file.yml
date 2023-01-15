@@ -1,0 +1,13 @@
+# This file contains values from Cookiecutter
+
+default_context:
+  project_name: "kenny"
+  project_description: "kenny generates multiple user interfaces from simple functionn definitions"
+  organization: "Ryan Ozelie"
+  license: "MIT"
+  minimal_python_version: 3.9
+  github_name: "rozelie"
+  email: "ryan.ozelie@gmail.com"
+  version: "0.0.1"
+  line_length: "120"
+  create_example_template: "none"
