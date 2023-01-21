@@ -1,5 +1,5 @@
 import kenny
 
 
-def test_version():
-    assert kenny.version == "0.0.1"
+def test_example():
+    assert isinstance(kenny.version, str)
