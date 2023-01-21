@@ -33,10 +33,11 @@ test:
 clean:
 	find . | grep -E "(__pycache__|\.pyc|\.pyo$$)" | xargs rm -rf
 	find . | grep -E ".DS_Store" | xargs rm -rf
+	rm -rf build/ dist/ kenny.egg-info/
 
 .PHONY: release
 release:
 	$(PIP) install --upgrade build twine
 	$(PYTHON) -m build
 	$(PYTHON) -m twine upload --repository pypi dist/*
-	rm -rf build/
+	$(MAKE) clean
