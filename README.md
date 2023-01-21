@@ -11,9 +11,9 @@
 
 `kenny` provides feature-rich clients to HTTP(s) APIs.
 
-# Why is it named `kenny`?
+# Why is it named "kenny"?
 
-Kenny is my cat's name.
+Kenny is my cat's name and I love him very much.
 
 ### Building and releasing your package
 
