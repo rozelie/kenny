@@ -1,6 +1,4 @@
-# type: ignore[attr-defined]
 """kenny provides feature-rich clients to HTTP(s) APIs."""
-
 
 from importlib import metadata as importlib_metadata
 
