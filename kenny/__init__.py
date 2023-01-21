@@ -1,9 +1,9 @@
 # type: ignore[attr-defined]
-"""kenny provides """
+"""kenny provides feature-rich clients to HTTP(s) APIs."""
 
-import sys
 
 from importlib import metadata as importlib_metadata
+
 
 def get_version() -> str:
     try:
