@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/github/license/rozelie/kenny)](https://github.com/rozelie/kenny/blob/master/LICENSE)
 ![Coverage Report](assets/images/coverage.svg)
 
-`kenny` generates multiple user interfaces from simple function definitions.
+`kenny` provides feature-rich clients to HTTP(s) APIs.
 
 # Why is it named `kenny`?
 

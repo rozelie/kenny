@@ -1,13 +1,9 @@
 # type: ignore[attr-defined]
-"""kenny generates multiple user interfaces from simple functionn definitions"""
+"""kenny provides """
 
 import sys
 
-if sys.version_info >= (3, 8):
-    from importlib import metadata as importlib_metadata
-else:
-    import importlib_metadata
-
+from importlib import metadata as importlib_metadata
 
 def get_version() -> str:
     try:
