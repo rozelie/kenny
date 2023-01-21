@@ -15,10 +15,13 @@ format:
 	$(VENV_BIN)/ruff --config pyproject.toml --fix $(PYTHON_DIRS)
 	$(VENV_BIN)/black --config pyproject.toml $(PYTHON_DIRS)
 
-.PHONY: verify
-verify:
+.PHONY: lint
+lint:
 	$(VENV_BIN)/black --diff --check --config pyproject.toml $(PYTHON_DIRS)
 	$(VENV_BIN)/ruff --config pyproject.toml $(PYTHON_DIRS)
+
+.PHONY: mypy
+mypy:
 	$(VENV_BIN)/mypy --config-file pyproject.toml $(PYTHON_DIRS)
 
 .PHONY: test
