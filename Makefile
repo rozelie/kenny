@@ -12,8 +12,8 @@ install:
 
 .PHONY: format
 format:
-	$(VENV_BIN)/ruff --config pyproject.toml --fix $(PYTHON_DIRS)
 	$(VENV_BIN)/black --config pyproject.toml $(PYTHON_DIRS)
+	$(VENV_BIN)/ruff --config pyproject.toml --fix $(PYTHON_DIRS)
 
 .PHONY: lint
 lint:
@@ -22,7 +22,7 @@ lint:
 
 .PHONY: mypy
 mypy:
-	$(VENV_BIN)/mypy --config-file pyproject.toml $(PYTHON_DIRS)
+	$(VENV_BIN)/mypy --config-file pyproject.toml --enable-incomplete-feature=Unpack $(PYTHON_DIRS)
 
 .PHONY: test
 test:

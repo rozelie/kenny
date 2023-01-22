@@ -40,3 +40,10 @@ Kenny is my cat's name and I love him very much.
 # Related work
 - [api-client](https://github.com/MikeWooster/api-client)
 - [rest3client](https://github.com/soda480/rest3client)
+
+
+# TODO
+- [ ] Automate package release on commits to main
+- [ ] Implement an interface for supplying a function to log/print with
+- [ ] Add typed interface to supply arbitrary requests args/kwargs
+- [ ] Increase test coverage with new features
