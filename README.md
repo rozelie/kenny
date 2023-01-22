@@ -47,3 +47,4 @@ Kenny is my cat's name and I love him very much.
 - [ ] Implement an interface for supplying a function to log/print with
 - [ ] Add typed interface to supply arbitrary requests args/kwargs
 - [ ] Increase test coverage with new features
+- [ ] Add 'BaseApiClient.parallelize_requests' method to easily make a list of requests in parallel
