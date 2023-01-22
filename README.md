@@ -36,3 +36,7 @@ TODO
 ### Why is the package called "kenny"?
 
 Kenny is my cat's name and I love him very much.
+
+# Related work
+- [api-client](https://github.com/MikeWooster/api-client)
+- [rest3client](https://github.com/soda480/rest3client)
