@@ -1,38 +1,14 @@
-from typing import TypedDict, Optional, Union, Any, IO
-from typing_extensions import Unpack
-from http.cookiejar import CookieJar
 from dataclasses import dataclass, field
+from http.cookiejar import CookieJar
+from typing import Any, Optional, Union
 
-import requests
-
-
-class RequestParams(TypedDict):
-    """Typed interface for `requests.api.request`.
-
-    `method` param is omitted as BaseAPIClient has a class method per HTTP method.
-    """
-
-    url: str
-    params: Optional[Union[dict[str, Any], list[tuple[Any, ...]], list[bytes]]]
-    data: Optional[Union[dict[str, Any], list[tuple[Any, ...]], list[bytes], list[IO[Any]]]]
-    json: Optional[Any]
-    headers: Optional[dict[str, Any]]
-    cookies: Optional[Union[dict[str, Any], CookieJar]]
-    files: Optional[dict[str, Any]]
-    auth: Optional[tuple[Any, ...]]
-    timeout: Optional[Union[float, tuple[float, float]]]
-    allow_redirects: bool
-    proxies: Optional[dict[str, str]]
-    verify: bool
-    stream: bool
-    cert: Optional[Union[str, tuple[str, str]]]
+from requests import Response, Session
 
 
 @dataclass
-class BaseAPIClient:
-    """Base class to interface with an HTTP(S) API."""
+class RequestParams:
+    """Params for `requests.api.request` and `BaseAPIClient`."""
 
-    base_url: str
     headers: Optional[dict[str, Any]] = None
     cookies: Optional[Union[dict[str, Any], CookieJar]] = None
     auth: Optional[tuple[Any, ...]] = None
@@ -43,38 +19,11 @@ class BaseAPIClient:
     stream: bool = False
     cert: Optional[Union[str, tuple[str, str]]] = None
     raise_for_status: bool = True
-    _session: requests.Session = field(init=False)
 
-    def __post_init__(self):
-        self.base_url = self.base_url[:-1] if self.base_url.endswith("/") else self.base_url
-        self._session = requests.Session()
-
-    def get(
-        self,
-        endpoint: Optional[str],
-        raise_for_status: Optional[bool] = None,
-        **request_params: Unpack[RequestParams],
-    ) -> requests.Response:
-        """Make a GET reques"""
-        return self._make_request("get", endpoint, raise_for_status, **request_params)
-
-    def _make_request(
-        self,
-        http_method: str,
-        endpoint: Optional[str] = None,
-        raise_for_status: Optional[bool] = None,
-        **request_params: Unpack[RequestParams],
-    ) -> requests.Response:
-        request_params_ = self._build_request_params(endpoint, **request_params)
-        request_function = getattr(self._session, http_method)
-        response = request_function(**request_params_)
-        return self._handle_response(response, raise_for_status)
-
-    def _build_request_params(
-        self, endpoint: Optional[str], **request_params: Unpack[RequestParams]
-    ) -> RequestParams:
-        for param_name, param in dict(
-            url=self._build_url(endpoint),
+    @property
+    def requests_kwargs(self) -> dict:
+        """Keyword args for `requests.api.request`."""
+        return dict(
             headers=self.headers,
             cookies=self.cookies,
             auth=self.auth,
@@ -84,23 +33,70 @@ class BaseAPIClient:
             verify=self.verify,
             stream=self.stream,
             cert=self.cert,
-        ).items():
-            request_params.setdefault(param_name, param)  # type: ignore
+        )
 
-        self._merge_headers(**request_params)
-        return request_params
+
+@dataclass
+class BaseAPIClient:
+    """Base class to interface with an HTTP(S) API."""
+
+    base_url: str
+    request_defaults: RequestParams = RequestParams()
+    _session: Session = field(init=False)
+
+    def __post_init__(self):
+        self.base_url = self.base_url[:-1] if self.base_url.endswith("/") else self.base_url
+        self._session = Session()
+
+    def get(self, endpoint: Optional[str], request_params: Optional[RequestParams] = None) -> Response:
+        """Make a GET request."""
+        return self._make_request("get", endpoint, request_params)
+
+    def delete(self, endpoint: Optional[str], request_params: Optional[RequestParams] = None) -> Response:
+        """Make a DELETE request."""
+        return self._make_request("delete", endpoint, request_params)
+
+    def head(self, endpoint: Optional[str], request_params: Optional[RequestParams] = None) -> Response:
+        """Make a HEAD request."""
+        return self._make_request("head", endpoint, request_params)
+
+    def options(self, endpoint: Optional[str], request_params: Optional[RequestParams] = None) -> Response:
+        """Make an OPTIONS request."""
+        return self._make_request("options", endpoint, request_params)
+
+    def patch(self, endpoint: Optional[str], request_params: Optional[RequestParams] = None) -> Response:
+        """Make a PATCH request."""
+        return self._make_request("patch", endpoint, request_params)
+
+    def post(self, endpoint: Optional[str], request_params: Optional[RequestParams] = None) -> Response:
+        """Make a POST request."""
+        return self._make_request("post", endpoint, request_params)
+
+    def put(self, endpoint: Optional[str], request_params: Optional[RequestParams] = None) -> Response:
+        """Make a PUT request."""
+        return self._make_request("put", endpoint, request_params)
+
+    def _make_request(
+        self, http_method: str, endpoint: Optional[str] = None, request_params: Optional[RequestParams] = None
+    ) -> Response:
+        request_function = getattr(self._session, http_method)
+        request_params_ = self._build_request_params(endpoint, request_params)
+        response = request_function(**request_params_)
+        return self._handle_response(response)
+
+    def _build_request_params(
+        self, endpoint: Optional[str], request_params: Optional[RequestParams] = None
+    ) -> dict[str, Any]:
+        requests_kwargs = self.request_defaults.requests_kwargs
+        if request_params:
+            requests_kwargs = RequestParams({**requests_kwargs, **request_params.requests_kwargs}).requests_kwargs
+
+        return dict(url=self._build_url(endpoint), **requests_kwargs)
 
     def _build_url(self, endpoint: Optional[str] = None) -> str:
         return f"{self.base_url}/{endpoint}" if endpoint else self.base_url
 
-    def _merge_headers(self, **request_params: Unpack[RequestParams]) -> dict[str, Any]:
-        headers = self.headers or {}
-        headers.update(request_params.get("headers", {}))  # type: ignore
-        request_params["headers"] = headers
-        return headers
-
-    def _handle_response(self, response: requests.Response, raise_for_status: Optional[bool]) -> requests.Response:
-        raise_for_status = raise_for_status if raise_for_status is not None else self.raise_for_status
-        if raise_for_status:
+    def _handle_response(self, response: Response) -> Response:
+        if self.request_defaults.raise_for_status:
             response.raise_for_status()
         return response
