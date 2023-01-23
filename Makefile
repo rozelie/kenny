@@ -12,6 +12,7 @@ install:
 
 .PHONY: format
 format:
+	$(VENV_BIN)/isort $(PYTHON_DIRS)
 	$(VENV_BIN)/black --config pyproject.toml $(PYTHON_DIRS)
 	$(VENV_BIN)/ruff --config pyproject.toml --fix $(PYTHON_DIRS)
 
